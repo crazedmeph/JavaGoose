@@ -46,6 +46,7 @@ public class GameServer extends Thread{
         short gameServerPort = GameSettings.getDefault().getGameServerPort();
 
         this.listen = new ServerSocket(gameServerPort, 10, InetAddress.getByName(gameServerIP));
+        GameWorld.isSaved = false;
     }
 
     /**
@@ -97,9 +98,13 @@ public class GameServer extends Thread{
                     this.gameworld.lostConnection(socket);
                 }
             }
-            this.gameworld.update();
-            if(System.currentTimeMillis() - start > 50)
-                Logger.INSTANCE.println("Loop took: " + (System.currentTimeMillis() - start));
+            if(this.gameworld.getPlayerHandler().getPlayerCount() > 0) {
+                this.gameworld.update();
+                if(System.currentTimeMillis() - start > 50)
+                    Logger.INSTANCE.println("Loop took: " + (System.currentTimeMillis() - start));
+            }else{
+                Thread.sleep(5000);
+            }
         }
         this.stopServer();
     }

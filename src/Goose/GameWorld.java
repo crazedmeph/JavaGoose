@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * NPCHandler - MapHandler ... etc
  */
 public class GameWorld {
-    public static boolean isSaved = false;
+    public static boolean isSaved = true;
 
     private PlayerHandler __PlayerHandler;
 
@@ -439,7 +439,7 @@ public class GameWorld {
         }
         Logger.INSTANCE.println("Saving items.");
         ExecutorService es = Executors.newCachedThreadPool();
-//        es.execute(this.getItemHandler().save(this)); //TODO - Verify if this is needed or not. Looks like players handles saving of items anyways. What is this for? Check goose code to see if this is being ran
+        es.execute(this.getItemHandler().save(this)); //TODO - Verify if this is needed or not. Looks like players handles saving of items anyways. What is this for? Check goose code to see if this is being ran
         Logger.INSTANCE.println("Saving players.");
         for (Goose.Player player : this.getPlayerHandler().getPlayers()) {
             if (player.getState().compareTo(Goose.Player.States.LoadingGame) > 0) {
