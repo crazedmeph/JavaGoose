@@ -16,7 +16,8 @@ public class Logger {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     public synchronized void println(String message){
         if(message != null) {
-            Platform.runLater(() -> Program.INSTANCE.textArea.appendText(message + "\n"));
+            Calendar cal = Calendar.getInstance();
+            Platform.runLater(() -> Program.INSTANCE.textArea.appendText(dateFormat.format(cal.getTime()) + " : " + message + "\n"));
             System.out.println(message);
         }
     }

@@ -1,11 +1,14 @@
 package Goose;
 
+import Goose.Events.LoginEvent;
 import org.apache.commons.codec.Charsets;
 
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The GameServer class handles all of the basic Socket handling to do with a server It contains the
@@ -62,6 +65,7 @@ public class GameServer extends Thread{
      * Once the loop is stopped this.Stop() is called to tidy up
      */
     public void gameLoop() throws Exception {
+        long lastPlayerCount = System.currentTimeMillis();
         Thread serverThread = new Thread(new ServerSocketHandler(this.listen, this));
         serverThread.start();
         long last = System.nanoTime();
@@ -98,11 +102,28 @@ public class GameServer extends Thread{
                     this.gameworld.lostConnection(socket);
                 }
             }
+            //TODO - This should not be needed but for some reason events are stil being added even when players are not on the game. Need to fix this and remove the manual LoginEvent code
             if(this.gameworld.getPlayerHandler().getPlayerCount() > 0) {
                 this.gameworld.update();
-                if(System.currentTimeMillis() - start > 50)
+                if(System.currentTimeMillis() - start > 50) {
                     Logger.INSTANCE.println("Loop took: " + (System.currentTimeMillis() - start));
+                }
+                if(System.currentTimeMillis() - lastPlayerCount > (60000 * 5)){
+                    lastPlayerCount = System.currentTimeMillis();
+                    Logger.INSTANCE.println("Current Players Online: " + this.gameworld.getPlayerHandler().getPlayerCount());
+                }
             }else{
+                LinkedHashMap<Long, Event> readyEvents = new LinkedHashMap<>();
+                this.gameworld.getEventHandler().putAll(readyEvents);
+
+                for (Map.Entry<Long, Event> entry : readyEvents.entrySet()) {
+                    Event e = entry.getValue();
+                    if(e instanceof LoginEvent) {
+                        e.ready(this.gameworld);
+                        this.gameworld.getEventHandler().removeEvent(e);
+                    }
+                }
+
                 Thread.sleep(5000);
             }
         }
