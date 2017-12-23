@@ -40,7 +40,7 @@ public class GuildHandler {
         Goose.Guild.GuildRanks rank = Goose.Guild.GuildRanks.Deleted;
         for (Object __dummyForeachVar0 : this.guilds.values()) {
             Guild guild = (Guild) __dummyForeachVar0;
-            world.getSqlConnection().createStatement()
+            resultSet = world.getSqlConnection().createStatement()
                     .executeQuery("SELECT * FROM guild_members WHERE guild_id=" + guild.getID());
             while (resultSet.next()) {
                 playerid = resultSet.getInt("player_id");
