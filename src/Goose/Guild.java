@@ -255,24 +255,24 @@ public class Guild {
             preparedStatement.executeUpdate();
         }
 
-        List<Integer> removed = new ArrayList<Integer>();
+        List<Integer> removed = new ArrayList<>();
         PlayerGuildStatus status;
         for (Object __dummyForeachVar2 : this.getMembers().values()) {
-            Object obj = (Object) __dummyForeachVar2;
+            Object obj = __dummyForeachVar2;
             status = (PlayerGuildStatus) obj;
             if (status.getDirty()) {
                 if (status.getRank() == GuildRanks.Deleted) {
                     query = "DELETE FROM guild_members WHERE guild_id=" + this.getID() + " AND player_id=" + status.getPlayerID();
-                    world.getSqlConnection().createStatement().executeQuery(query);
+                    world.getSqlConnection().createStatement().executeUpdate(query);
                     removed.add(status.getPlayerID());
                 } else {
                     if (status.getJustAdded()) {
                         query = "INSERT INTO guild_members (guild_id, player_id, guild_rank) VALUES (" + this.getID() + ", " + status.getPlayerID() + ", " + status.getRank().ordinal() + ")";
-                        world.getSqlConnection().createStatement().executeQuery(query);
+                        world.getSqlConnection().createStatement().executeUpdate(query);
                         status.setJustAdded(false);
                     } else {
                         query = "UPDATE guild_members SET guild_rank=" + status.getRank().ordinal() + " WHERE guild_id=" + this.getID() + " AND player_id=" + status.getPlayerID();
-                        world.getSqlConnection().createStatement().executeQuery(query);
+                        world.getSqlConnection().createStatement().executeUpdate(query);
                     }
                 }
                 status.setDirty(false);
