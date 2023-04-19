@@ -15,3 +15,5 @@ INSERT INTO wordfilter VALUES ('fuck', '****');
 INSERT INTO wordfilter VALUES ('nigger', '******');
 INSERT INTO wordfilter VALUES ('nigga', '*****');
 INSERT INTO wordfilter VALUES ('cunt', '****');
+INSERT INTO wordfilter VALUES ('dick', '****');
+INSERT INTO wordfilter VALUES ('pussy', '****');
