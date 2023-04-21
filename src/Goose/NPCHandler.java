@@ -121,7 +121,7 @@ public class NPCHandler {
             }
             resultSet.close();
             query = "SELECT * FROM npc_vendor_items WHERE npc_template_id=" + template.getNPCTemplateID();
-            resultSet = world.getSqlConnection().createStatement().executeQuery(query);
+            resultSet = world.getSqlConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery(query);
             if (resultSet.next()) {
                 template
                         .setVendorItems(new NPCVendorSlot[GameSettings.getDefault().getVendorSlotSize() + 1]);

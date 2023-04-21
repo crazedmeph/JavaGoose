@@ -79,49 +79,27 @@ CREATE TABLE spellbook (
   last_casted BIGINT DEFAULT 0 NOT NULL
 );
 
-DROP PROCEDURE AddPlayerSpells;
-CREATE PROCEDURE AddPlayerSpells @PlayerName VARCHAR(32) AS
-
-DECLARE @PlayerID INT
-DECLARE @PlayerClass INT
-DECLARE @PlayerLevel INT
-SELECT @PlayerID=player_id, @PlayerClass=class_id, @PlayerLevel=player_level 
-FROM players WHERE player_name=@PlayerName
-
-DECLARE @SpellClass INT
-DECLARE @SpellLevel INT
-DECLARE @SpellID INT
-
-DECLARE @Counter INT = 1
-
-DECLARE ClassSpellCursor CURSOR FOR (SELECT class_id, level, spell_id FROM classes_levelup_spells)
-OPEN ClassSpellCursor
-
-FETCH NEXT FROM ClassSpellCursor INTO @SpellClass, @SpellLevel, @SpellID
-WHILE @@FETCH_STATUS = 0
+CREATE OR REPLACE PROCEDURE AddPlayerSpells(IN PlayerName VARCHAR(32))
+AS $$
+DECLARE
+PlayerID INT;
+    PlayerClass INT;
+    PlayerLevel INT;
+    SpellClass INT;
+    SpellLevel INT;
+    SpellID INT;
+    Counter INT = 1;
 BEGIN
+SELECT player_id, class_id, player_level INTO PlayerID, PlayerClass, PlayerLevel FROM players WHERE player_name = PlayerName;
 
-	IF (@PlayerClass = @SpellClass) AND (@PlayerLevel >= @SpellLevel) BEGIN
-		INSERT INTO spellbook (player_id, spell_id, slot) VALUES (@PlayerID, @SpellID, @Counter)
-		SET @Counter = @Counter + 1
-	END
+FOR ClassSpellCursor IN SELECT class_id, level, spell_id FROM classes_levelup_spells WHERE class_id = PlayerClass AND level <= PlayerLevel ORDER BY level ASC
+    LOOP
+        SpellClass := ClassSpellCursor.class_id;
+SpellLevel := ClassSpellCursor.level;
+        SpellID := ClassSpellCursor.spell_id;
 
-	FETCH NEXT FROM ClassSpellCursor INTO @SpellClass, @SpellLevel, @SpellID
-END
-
-CLOSE ClassSpellCursor
-DEALLOCATE ClassSpellCursor
-
-
-
-
-
-
-create or replace procedure procedure_name(parameter_list)
-language plpgsql
-as $$
-declare
--- variable declaration
-begin
--- stored procedure body
-end; $$
+INSERT INTO spellbook (player_id, spell_id, slot) VALUES (PlayerID, SpellID, Counter);
+Counter := Counter + 1;
+END LOOP;
+END;
+$$ LANGUAGE PLPGSQL;

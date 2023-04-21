@@ -102,7 +102,7 @@ public class GameServer extends Thread{
                     this.gameworld.lostConnection(socket);
                 }
             }
-            //TODO - This should not be needed but for some reason events are stil being added even when players are not on the game. Need to fix this and remove the manual LoginEvent code
+            //TODO - This should not be needed but for some reason events are still being added even when players are not on the game. Need to fix this and remove the manual LoginEvent code
             if(this.gameworld.getPlayerHandler().getPlayerCount() > 0) {
                 this.gameworld.update();
                 if(System.currentTimeMillis() - start > 50) {
@@ -124,7 +124,7 @@ public class GameServer extends Thread{
                     }
                 }
 
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             }
         }
         this.stopServer();

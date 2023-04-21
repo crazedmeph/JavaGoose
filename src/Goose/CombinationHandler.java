@@ -20,8 +20,7 @@ public class CombinationHandler {
      * LoadCombinations, loads all combinations from the database
      */
     public void loadCombinations(GameWorld world) throws Exception {
-        ResultSet resultSet =
-                world.getSqlConnection().createStatement().executeQuery("SELECT * FROM combinations");
+        ResultSet resultSet = world.getSqlConnection().createStatement().executeQuery("SELECT * FROM combinations");
         while (resultSet.next()) {
             Combination comb = new Combination();
             comb.setID(resultSet.getInt("combination_id"));

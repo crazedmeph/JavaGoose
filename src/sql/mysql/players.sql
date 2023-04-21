@@ -79,35 +79,36 @@ CREATE TABLE spellbook (
   last_casted BIGINT DEFAULT 0 NOT NULL
 );
 
-DROP PROCEDURE AddPlayerSpells;
-CREATE PROCEDURE AddPlayerSpells @PlayerName VARCHAR(32) AS
+DROP PROCEDURE IF EXISTS AddPlayerSpells;
+DELIMITER //
 
-DECLARE @PlayerID INT
-DECLARE @PlayerClass INT
-DECLARE @PlayerLevel INT
-SELECT @PlayerID=player_id, @PlayerClass=class_id, @PlayerLevel=player_level 
-FROM players WHERE player_name=@PlayerName
-
-DECLARE @SpellClass INT
-DECLARE @SpellLevel INT
-DECLARE @SpellID INT
-
-DECLARE @Counter INT = 1
-
-DECLARE ClassSpellCursor CURSOR FOR (SELECT class_id, level, spell_id FROM classes_levelup_spells)
-OPEN ClassSpellCursor
-
-FETCH NEXT FROM ClassSpellCursor INTO @SpellClass, @SpellLevel, @SpellID
-WHILE @@FETCH_STATUS = 0
+CREATE PROCEDURE AddPlayerSpells (IN PlayerName VARCHAR(32))
 BEGIN
+    DECLARE PlayerID INT;
+    DECLARE PlayerClass INT;
+    DECLARE PlayerLevel INT;
+    DECLARE SpellClass INT;
+    DECLARE SpellLevel INT;
+    DECLARE SpellID INT;
+    DECLARE Counter INT DEFAULT 1;
 
-	IF (@PlayerClass = @SpellClass) AND (@PlayerLevel >= @SpellLevel) BEGIN
-		INSERT INTO spellbook (player_id, spell_id, slot) VALUES (@PlayerID, @SpellID, @Counter)
-		SET @Counter = @Counter + 1
-	END
+    DECLARE ClassSpellCursor CURSOR FOR SELECT class_id, level, spell_id FROM classes_levelup_spells WHERE class_id = PlayerClass AND level <= PlayerLevel ORDER BY level ASC;
 
-	FETCH NEXT FROM ClassSpellCursor INTO @SpellClass, @SpellLevel, @SpellID
-END
+SELECT player_id, class_id, player_level INTO PlayerID, PlayerClass, PlayerLevel FROM players WHERE player_name = PlayerName;
 
-CLOSE ClassSpellCursor
-DEALLOCATE ClassSpellCursor
+OPEN ClassSpellCursor;
+
+spell_loop: LOOP
+        FETCH ClassSpellCursor INTO SpellClass, SpellLevel, SpellID;
+
+        IF (done) THEN
+            CLOSE ClassSpellCursor;
+            LEAVE spell_loop;
+END IF;
+
+INSERT INTO spellbook (player_id, spell_id, slot) VALUES (PlayerID, SpellID, Counter);
+SET Counter = Counter + 1;
+END LOOP;
+CLOSE ClassSpellCursor;
+END//
+DELIMITER ;
