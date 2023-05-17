@@ -4,6 +4,9 @@ import Goose.Event;
 import Goose.GameWorld;
 import Goose.Player.AccessStatus;
 
+/**
+ * /giveexperience playername expamount
+ */
 public class GMGiveExperienceCommandEvent extends Event {
     public GMGiveExperienceCommandEvent() throws Exception {
         super("GMGiveExperienceCommandEvent");

@@ -2,6 +2,7 @@ package Goose;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Item, holds the actual item data
@@ -428,29 +429,29 @@ public class Item implements IItem {
      */
     public void saveItem(GameWorld world) throws Exception {
         new Thread(() -> {
-            try {
-                String query =
-                        "UPDATE items SET " + "item_template_id=" + this.getTemplateID() + ", " + "item_name="
-                                + "?" + ", " + "item_description=" + "?" + ", " + "player_hp="
-                                + this.getBaseStats().getHP() + ", " + "player_mp=" + this.getBaseStats().getMP()
-                                + ", " + "player_sp=" + this.getBaseStats().getSP() + ", " + "stat_ac="
-                                + this.getBaseStats().getAC() + ", " + "stat_str=" + this.getBaseStats().getStrength()
-                                + ", " + "stat_sta=" + this.getBaseStats().getStamina() + ", " + "stat_dex="
-                                + this.getBaseStats().getDexterity() + ", " + "stat_int="
-                                + this.getBaseStats().getIntelligence() + ", " + "res_fire="
-                                + this.getBaseStats().getFireResist() + ", " + "res_water="
-                                + this.getBaseStats().getWaterResist() + ", " + "res_spirit="
-                                + this.getBaseStats().getSpiritResist() + ", " + "res_air="
-                                + this.getBaseStats().getAirResist() + ", " + "res_earth="
-                                + this.getBaseStats().getEarthResist() + ", " + "weapon_damage=" + this.weapondamage
-                                + ", " + "item_value=" + this.getValue() + ", " + "graphic_tile="
-                                + this.getGraphicTile() + ", " + "graphic_equip=" + this.getGraphicEquipped() + ", "
-                                + "graphic_r=" + this.getGraphicR() + ", " + "graphic_g=" + this.getGraphicG() + ", "
-                                + "graphic_b=" + this.getGraphicB() + ", " + "graphic_a=" + this.getGraphicA() + ", "
-                                + "stat_multiplier=" + this.getStatMultiplier() + ", " + "bound="
-                                + (this.bound ? "'1'" : "'0'") + ", " + "body_state=" + this.getBodyState()
-                                + " WHERE item_id=" + this.getItemID();
-                PreparedStatement preparedStatement = world.getSqlConnection().prepareStatement(query);
+            String query =
+                    "UPDATE items SET " + "item_template_id=" + this.getTemplateID() + ", " + "item_name="
+                            + "?" + ", " + "item_description=" + "?" + ", " + "player_hp="
+                            + this.getBaseStats().getHP() + ", " + "player_mp=" + this.getBaseStats().getMP()
+                            + ", " + "player_sp=" + this.getBaseStats().getSP() + ", " + "stat_ac="
+                            + this.getBaseStats().getAC() + ", " + "stat_str=" + this.getBaseStats().getStrength()
+                            + ", " + "stat_sta=" + this.getBaseStats().getStamina() + ", " + "stat_dex="
+                            + this.getBaseStats().getDexterity() + ", " + "stat_int="
+                            + this.getBaseStats().getIntelligence() + ", " + "res_fire="
+                            + this.getBaseStats().getFireResist() + ", " + "res_water="
+                            + this.getBaseStats().getWaterResist() + ", " + "res_spirit="
+                            + this.getBaseStats().getSpiritResist() + ", " + "res_air="
+                            + this.getBaseStats().getAirResist() + ", " + "res_earth="
+                            + this.getBaseStats().getEarthResist() + ", " + "weapon_damage=" + this.weapondamage
+                            + ", " + "item_value=" + this.getValue() + ", " + "graphic_tile="
+                            + this.getGraphicTile() + ", " + "graphic_equip=" + this.getGraphicEquipped() + ", "
+                            + "graphic_r=" + this.getGraphicR() + ", " + "graphic_g=" + this.getGraphicG() + ", "
+                            + "graphic_b=" + this.getGraphicB() + ", " + "graphic_a=" + this.getGraphicA() + ", "
+                            + "stat_multiplier=" + this.getStatMultiplier() + ", " + "bound="
+                            + (this.bound ? "'1'" : "'0'") + ", " + "body_state=" + this.getBodyState()
+                            + " WHERE item_id=" + this.getItemID();
+
+            try (PreparedStatement preparedStatement = world.getSqlConnection().prepareStatement(query)){ // TODO - NEED TO VERIFY THIS, I added a try with resources. I assume this is fine.
                 preparedStatement.setString(1, this.getName());
                 preparedStatement.setString(2, this.getDescription());
                 preparedStatement.executeUpdate();
@@ -466,8 +467,9 @@ public class Item implements IItem {
      * DeleteItem, deletes item from database
      */
     public void deleteItem(GameWorld world) throws Exception {
-        world.getSqlConnection().createStatement()
-                .executeUpdate("DELETE FROM items WHERE item_id=" + this.getItemID());
+        try(Statement statement = world.getSqlConnection().createStatement()){ // TODO - NEED TO VERIFY THIS, I added a try with resources. I assume this is fine.
+            statement.executeUpdate("DELETE FROM items WHERE item_id=" + this.getItemID());
+        }
     }
 
 }

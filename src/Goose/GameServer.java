@@ -89,7 +89,7 @@ public class GameServer extends Thread{
                             this.gameworld.received(socket, strBuffer);
                         }
                     } else {
-//                        Not sure why it is doing this? This is sending bas requests to the client and I believe is messing things up in the long run
+                        // This seems to happen when someone is alt tabbed maybe?
                         //TODO - Try removing this to see what is happening here.
                         if (System.nanoTime() - last > GameSettings.getDefault().getLogoutLagTime() * 1_000_000_000) {
                             String ping = "PING" + "\u0001";

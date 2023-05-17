@@ -237,9 +237,6 @@ public class GameWorld {
         this.setRankHandler(new RankHandler());
         this.setCombinationHandler(new CombinationHandler());
         this.setChatFilter(new ChatFilter());
-
-//        java.lang.Class.forName("com.mysql.jdbc.Driver");
-
     }
 
     /**
@@ -475,7 +472,7 @@ public class GameWorld {
             ev.setTicks(ev.getTicks()
                     + (GameSettings.getDefault().getLogoutLagTime() * this.getTimerFrequency()));
             this.getEventHandler().addEvent(ev);
-        } catch (Exception __dummyCatchVar0) {
+        } catch (Exception exception) {
         }
 
     }

@@ -193,6 +193,7 @@ public class ItemHandler {
      * Save, saves items
      */
     public Thread save(GameWorld world) throws Exception {
+        // Todo - Need to add threadpool instead of creating a new thread everytime. Not really a huge deal as the thread shouldnt be executed often and then clean itself up.
         Thread t = new Thread(() -> {
             try {
                 List<Integer> remove = new ArrayList<>();

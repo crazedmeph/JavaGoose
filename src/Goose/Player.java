@@ -37,6 +37,16 @@ public class Player implements ICharacter {
         return this.sock;
     }
 
+    // Check if the character is currently stunned
+    public Boolean isStunned(){
+        for (Buff buff : this.getBuffs()) {
+            if (buff.getSpellEffect().getEffectType() == EffectTypes.Stun) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setSock(Socket value) throws Exception {
         this.sock = value;
     }
