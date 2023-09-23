@@ -1,3 +1,9 @@
+create database goose;
+create user goose with password 'pass';
+GRANT CONNECT ON DATABASE goose TO goose;
+GRANT pg_read_all_data TO goose;
+GRANT pg_write_all_data TO goose;
+
 DROP TABLE IF EXISTS items;
 CREATE TABLE items (
   item_id SERIAL PRIMARY KEY,

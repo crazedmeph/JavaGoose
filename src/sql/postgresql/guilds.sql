@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS guilds;
 
 CREATE TABLE guilds (

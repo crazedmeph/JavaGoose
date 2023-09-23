@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS item_templates;
 CREATE TABLE item_templates (
   item_template_id SERIAL PRIMARY KEY,

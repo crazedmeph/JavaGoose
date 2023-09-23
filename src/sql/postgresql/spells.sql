@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE if exists spells;
 CREATE TABLE spells (
   spell_id SERIAL PRIMARY KEY,

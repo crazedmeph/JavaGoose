@@ -95,7 +95,7 @@ public class GameWorld {
         Connection connect = null;
         try {
             String connectionString =
-                    "jdbc:mysql://" + GameSettings.getDefault().getDatabaseAddress() + "/"
+                    GameSettings.getDefault().getJdbcConnectString() + GameSettings.getDefault().getDatabaseAddress() + "/"
                             + GameSettings.getDefault().getDatabaseName() + "?user="
                             + GameSettings.getDefault().getDatabaseUsername() + "&password="
                             + GameSettings.getDefault().getDatabasePassword() + "&useSSL=false";
@@ -258,7 +258,7 @@ public class GameWorld {
 //            this.setSqlConnection(cpds.getConnection());
 
             String connectionString =
-                    "jdbc:mysql://" + GameSettings.getDefault().getDatabaseAddress() + "/"
+                    GameSettings.getDefault().getJdbcConnectString() + GameSettings.getDefault().getDatabaseAddress() + "/"
                             + GameSettings.getDefault().getDatabaseName() + "?user="
                             + GameSettings.getDefault().getDatabaseUsername() + "&password="
                             + GameSettings.getDefault().getDatabasePassword() + "&useSSL=false";

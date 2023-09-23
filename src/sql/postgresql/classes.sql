@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS classes;
 CREATE TABLE classes (
   class_id SERIAL PRIMARY KEY,

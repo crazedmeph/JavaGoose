@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS pets;
 CREATE TABLE pets (
   pet_id INT NOT NULL,

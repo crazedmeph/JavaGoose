@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS combination_item_required;
 CREATE TABLE combination_item_required (
 	combination_id INT NOT NULL,

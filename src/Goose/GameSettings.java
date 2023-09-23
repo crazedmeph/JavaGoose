@@ -118,15 +118,18 @@ public final class GameSettings {
     private int petCountLimit;
     private String databaseAddress;
     private long experienceGainAtMaxLevel;
+    private String jdbcConnectString;
 
     private GameSettings() {
         autoCharacterCreation = true;
         gameServerPort = 6500;
         maxPlayers = 200;
-        gameServerIP = "192.168.1.64";
-        databaseUsername = "dbUsername";
-        databasePassword = "dbPassword";
-        databaseAddress = "localhost";
+        gameServerIP = "192.168.1.119";
+        databaseUsername = "goose";
+        databasePassword = "pass";
+        databaseAddress = "localhost:5432";
+        jdbcConnectString = "jdbc:postgresql://";
+//        jdbcConnectString = "jdbc:mysql://";
         databaseName = "goose";
         serverName = "Goose";
         startingMapID = 1;
@@ -989,6 +992,14 @@ public final class GameSettings {
 
     public void setDatabaseAddress(String value) throws Exception {
         databaseAddress = value;
+    }
+
+    public String getJdbcConnectString(){
+        return jdbcConnectString;
+    }
+
+    public void setJdbcConnectString(String value){
+        jdbcConnectString = value;
     }
 
     public long getExperienceGainAtMaxLevel() {

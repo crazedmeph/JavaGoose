@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS npc_templates;
 CREATE TABLE npc_templates (
   npc_id SERIAL PRIMARY KEY,

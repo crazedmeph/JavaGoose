@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS players;
 CREATE TABLE players (
   player_id INT NOT NULL,
@@ -79,8 +77,8 @@ CREATE TABLE spellbook (
   last_casted BIGINT DEFAULT 0 NOT NULL
 );
 
-CREATE OR REPLACE PROCEDURE AddPlayerSpells(IN PlayerName VARCHAR(32))
-AS $$
+CREATE OR REPLACE FUNCTION AddPlayerSpells(PlayerName VARCHAR(32))
+RETURNS VOID AS $$
 DECLARE
 PlayerID INT;
     PlayerClass INT;
@@ -88,18 +86,27 @@ PlayerID INT;
     SpellClass INT;
     SpellLevel INT;
     SpellID INT;
-    Counter INT = 1;
+    Counter INT := 1;
+    ClassSpellCursor CURSOR FOR
+SELECT class_id, level, spell_id FROM classes_levelup_spells WHERE class_id = PlayerClass AND level <= PlayerLevel ORDER BY level ASC;
+ClassSpellRecord RECORD;
 BEGIN
 SELECT player_id, class_id, player_level INTO PlayerID, PlayerClass, PlayerLevel FROM players WHERE player_name = PlayerName;
 
-FOR ClassSpellCursor IN SELECT class_id, level, spell_id FROM classes_levelup_spells WHERE class_id = PlayerClass AND level <= PlayerLevel ORDER BY level ASC
-    LOOP
-        SpellClass := ClassSpellCursor.class_id;
-SpellLevel := ClassSpellCursor.level;
-        SpellID := ClassSpellCursor.spell_id;
+OPEN ClassSpellCursor;
+
+LOOP
+FETCH ClassSpellCursor INTO ClassSpellRecord;
+        EXIT WHEN NOT FOUND;
+
+        SpellClass := ClassSpellRecord.class_id;
+        SpellLevel := ClassSpellRecord.level;
+        SpellID := ClassSpellRecord.spell_id;
 
 INSERT INTO spellbook (player_id, spell_id, slot) VALUES (PlayerID, SpellID, Counter);
 Counter := Counter + 1;
 END LOOP;
+
+CLOSE ClassSpellCursor;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE plpgsql;

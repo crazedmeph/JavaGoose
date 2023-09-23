@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS warptiles;
 CREATE TABLE warptiles (
   id SERIAL PRIMARY KEY,

@@ -1,5 +1,3 @@
-USE Goose;
-
 DROP TABLE IF EXISTS maps;
 CREATE TABLE maps (
   map_id SERIAL PRIMARY KEY,
