@@ -17,7 +17,7 @@ public class Logger {
     public synchronized void println(String message){
         if(message != null) {
             Calendar cal = Calendar.getInstance();
-            Platform.runLater(() -> Program.INSTANCE.textArea.appendText(dateFormat.format(cal.getTime()) + " : " + message + "\n"));
+//            Platform.runLater(() -> Program.INSTANCE.textArea.appendText(dateFormat.format(cal.getTime()) + " : " + message + "\n"));
             System.out.println(message);
         }
     }
@@ -25,7 +25,7 @@ public class Logger {
     public synchronized void connect(String message){
         if(message != null){
             Calendar cal = Calendar.getInstance();
-            Platform.runLater(() -> Program.INSTANCE.textArea.appendText("\t" + dateFormat.format(cal.getTime()) + " : " + message + "\n"));
+//            Platform.runLater(() -> Program.INSTANCE.textArea.appendText("\t" + dateFormat.format(cal.getTime()) + " : " + message + "\n"));
             System.out.println(message);
         }
     }
@@ -33,7 +33,7 @@ public class Logger {
     public synchronized void print(String message){
         if(message != null) {
             Calendar cal = Calendar.getInstance();
-            Platform.runLater(() -> Program.INSTANCE.textArea.appendText("\t" + dateFormat.format(cal.getTime()) + " : " + message));
+//            Platform.runLater(() -> Program.INSTANCE.textArea.appendText("\t" + dateFormat.format(cal.getTime()) + " : " + message));
             System.out.print(message);
         }
     }
@@ -43,7 +43,7 @@ public class Logger {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         Calendar cal = Calendar.getInstance();
-        Platform.runLater(() -> Program.INSTANCE.textArea.appendText("\t" + dateFormat.format(cal.getTime()) + " : " + sw.toString() + "\n"));
+//        Platform.runLater(() -> Program.INSTANCE.textArea.appendText("\t" + dateFormat.format(cal.getTime()) + " : " + sw.toString() + "\n"));
         e.printStackTrace();
     }
 }

@@ -9,7 +9,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class Program extends Application{
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
+public class Program{
     TextField input;
     GameServer gm;
     Player p = new Player();
@@ -20,50 +25,51 @@ public class Program extends Application{
      * Just starts our GameServer
      */
     public static void main(String[] args) throws Exception {
-        launch(args);
+        new Program().run();
+//        launch(args);
     }
 
-    public TextArea textArea = new TextArea();
+//    public TextArea textArea = new TextArea();
 
-    @Override
-    public void start(Stage primaryStage) {
-        INSTANCE = this;
-        p.setState(Player.States.Ready);
-        p.setAccess(Player.AccessStatus.GameMaster);
-        input = new TextField();
-        input.setPrefWidth(500);
-        input.setOnKeyPressed(event -> {
-            if(event.getCode().equals(KeyCode.ENTER)){
-                textArea.appendText("Command: " + input.getText() + "\n");
-                handleEvent(input);
-                input.setText("");
-            }
-        });
-
-        GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(10);
-        gridPane.setVgap(10);
-        gridPane.add(input, 0, 0, 2, 1);
-        gridPane.add(textArea, 0, 2, 2, 1);
-
-        Scene scene = new Scene(gridPane, 530, 250);
-        primaryStage.setMaxWidth(540);
-        primaryStage.setMaxHeight(280);
-        primaryStage.setMinWidth(540);
-        primaryStage.setMinHeight(280);
-        primaryStage.setTitle("Aspereta Server");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(we -> {
-            textArea.appendText("Shutting down server...");
-            if(gm.gameworld.getRunning()) {
-                gm.gameworld.setRunning(false);
-            }
-            exit();
-        });
-        run();
-    }
+//    @Override
+//    public void start(Stage primaryStage) {
+//        INSTANCE = this;
+//        p.setState(Player.States.Ready);
+//        p.setAccess(Player.AccessStatus.GameMaster);
+//        input = new TextField();
+//        input.setPrefWidth(500);
+//        input.setOnKeyPressed(event -> {
+//            if(event.getCode().equals(KeyCode.ENTER)){
+//                textArea.appendText("Command: " + input.getText() + "\n");
+//                handleEvent(input);
+//                input.setText("");
+//            }
+//        });
+//
+//        GridPane gridPane = new GridPane();
+//        gridPane.setAlignment(Pos.CENTER);
+//        gridPane.setHgap(10);
+//        gridPane.setVgap(10);
+//        gridPane.add(input, 0, 0, 2, 1);
+//        gridPane.add(textArea, 0, 2, 2, 1);
+//
+//        Scene scene = new Scene(gridPane, 530, 250);
+//        primaryStage.setMaxWidth(540);
+//        primaryStage.setMaxHeight(280);
+//        primaryStage.setMinWidth(540);
+//        primaryStage.setMinHeight(280);
+//        primaryStage.setTitle("Aspereta Server");
+//        primaryStage.setScene(scene);
+//        primaryStage.show();
+//        primaryStage.setOnCloseRequest(we -> {
+//            textArea.appendText("Shutting down server...");
+//            if(gm.gameworld.getRunning()) {
+//                gm.gameworld.setRunning(false);
+//            }
+//            exit();
+//        });
+//        run();
+//    }
 
     public void exit(){
         try {

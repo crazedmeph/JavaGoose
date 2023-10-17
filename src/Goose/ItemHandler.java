@@ -193,12 +193,10 @@ public class ItemHandler {
      * Save, saves items
      */
     public Thread save(GameWorld world) throws Exception {
-        // Todo - Need to add threadpool instead of creating a new thread everytime. Not really a huge deal as the thread shouldnt be executed often and then clean itself up.
-        Thread t = new Thread(() -> {
+        return Thread.ofVirtual().unstarted(() -> {
             try {
                 List<Integer> remove = new ArrayList<>();
                 ArrayList<Item> itemsCopy = new ArrayList<>(items.values());
-//                for (Item item : this.items.values()) {
                 for (Item item : itemsCopy) {
                     if (item.getDelete()) {
                         item.deleteItem(world);
@@ -209,12 +207,10 @@ public class ItemHandler {
 
                 }
                 for (int id : remove) {
-//                    removeItem(id);
                     this.items.remove(id);
                 }
 
                 ArrayList<Item> newItemsCopy = new ArrayList<>(newitems);
-//                for (Item item : this.newitems) {
                 for (Item item : newItemsCopy) {
                     if (item.getDelete()) continue;
 
@@ -228,7 +224,6 @@ public class ItemHandler {
                 Logger.INSTANCE.println(e);
             }
         });
-        return t;
     }
 
     public synchronized void removeItem(int id){

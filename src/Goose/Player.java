@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -972,26 +973,24 @@ public class Player implements ICharacter {
         this.setAetherThreshold(GameSettings.getDefault().getDefaultAetherThreshold());
         this.setInventory(new Inventory(this));
         String[] items = GameSettings.getDefault().getStartingItems().split(" ");
-        if (items.length > 0) {
-            for (int i = 0; i < items.length; i++) {
-                try {
-                    int templateid = Integer.valueOf(items[i]);
-                    ItemTemplate template = world.getItemHandler().getTemplate(templateid);
-                    if (template == null) {
-                        continue;
-                    }
-
-                    // log bad id in starting items
-                    Item item = new Item();
-                    item.loadFromTemplate(template);
-                    world.getItemHandler().addItem(item);
-                    if (!this.getInventory().addItem(item, 1, world)) {
-                    }
-
-                } catch (Exception __dummyCatchVar0) {
+        for (String s : items) {
+            try {
+                int templateid = Integer.valueOf(s);
+                ItemTemplate template = world.getItemHandler().getTemplate(templateid);
+                if (template == null) {
+                    continue;
                 }
 
+                // log bad id in starting items
+                Item item = new Item();
+                item.loadFromTemplate(template);
+                world.getItemHandler().addItem(item);
+                if (!this.getInventory().addItem(item, 1, world)) {
+                }
+
+            } catch (Exception __dummyCatchVar0) {
             }
+
         }
 
         // log not enough inventory space for starting items
@@ -1203,7 +1202,8 @@ public class Player implements ICharacter {
      * SaveToDatabase, saves player info to database
      */
     public Thread saveToDatabase(GameWorld world) throws Exception {
-        return new Thread(() -> {
+        return Thread.ofVirtual().unstarted(() -> {
+//        return new Thread(() -> {
             try {
                 if (this.getGuildID() == 0 && this.getGuild() != null) this.getGuild().save(world);
 
@@ -1301,8 +1301,11 @@ public class Player implements ICharacter {
                                     + this.getAetherThreshold()
                                     + ", "
                                     + (long) this.getToggleSettings().getValue() + ")";
-                    world.getSqlConnection().createStatement().executeUpdate(query);
-                    this.setAutoCreatedNotSaved(false);
+                    try(Statement statement = world.getSqlConnection().createStatement()){
+                        statement.executeUpdate(query);
+                        this.setAutoCreatedNotSaved(false);
+                    }
+
                 } else {
                     String query =
                             "UPDATE players SET " + "player_name='" + this.getName() + "', " + "player_title='"
@@ -1339,7 +1342,7 @@ public class Player implements ICharacter {
                 this.getInventory().save(world);
                 this.getSpellbook().save(world);
                 for (Pet pet : this.getPets()) {
-                    pet.saveToDatabase(world).start();
+                    pet.saveToDatabase(world);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

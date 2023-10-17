@@ -105,7 +105,7 @@ public class PlayerHandler {
      * Just uses our dictionary mapping to get the Player object
      */
     public Goose.Player getPlayer(Socket sock) throws Exception {
-        return (Goose.Player) this.sockToPlayer.get(sock);
+        return this.sockToPlayer.get(sock);
     }
 
     /**
@@ -157,7 +157,7 @@ public class PlayerHandler {
      */
     public Goose.Player getPlayerFromData(String name) throws Exception {
         name = name.toLowerCase();
-        return (Goose.Player) this.allNameToPlayer.get(name);
+        return this.allNameToPlayer.get(name);
     }
 
     public void loadPlayerData(GameWorld world) throws Exception {

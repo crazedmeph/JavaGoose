@@ -388,7 +388,8 @@ public class Pet extends Goose.Player {
     }
 
     public Thread saveToDatabase(GameWorld world) throws Exception {
-        return new Thread(() -> {
+        return Thread.ofVirtual().unstarted(() -> {
+//        return new Thread(() -> {
             try {
                 if (this.getAutoCreatedNotSaved()) {
                     String query =

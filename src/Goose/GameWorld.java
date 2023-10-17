@@ -3,11 +3,13 @@ package Goose;
 import Goose.Events.ClearCreatedHistoryEvent;
 import Goose.Events.LoginEvent;
 import Goose.Events.LogoutEvent;
+import Goose.datasource.DataSourcePool;
 
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -77,12 +79,14 @@ public class GameWorld {
 
     public Connection getSqlConnection() {
         try {
-            if(__SqlConnection.isValid(1000)) {
-                return __SqlConnection;
-            }else{
-                renewConnection();
-                Logger.INSTANCE.println("HERE************* Not Valid SQL Connection Renewing connection to see if anything is going to still work");
-            }
+            // TODO - trying out connection pooling instead of instances
+            return DataSourcePool.getConnection();
+//            if(__SqlConnection.isValid(1000)) {
+//                return __SqlConnection;
+//            }else{
+//                renewConnection();
+//                Logger.INSTANCE.println("HERE************* Not Valid SQL Connection Renewing connection to see if anything is going to still work");
+//            }
         } catch (SQLException e) {
             Logger.INSTANCE.println("HERE************* And it hit the exception");
             renewConnection();
@@ -94,13 +98,15 @@ public class GameWorld {
     public void renewConnection(){
         Connection connect = null;
         try {
-            String connectionString =
-                    GameSettings.getDefault().getJdbcConnectString() + GameSettings.getDefault().getDatabaseAddress() + "/"
-                            + GameSettings.getDefault().getDatabaseName() + "?user="
-                            + GameSettings.getDefault().getDatabaseUsername() + "&password="
-                            + GameSettings.getDefault().getDatabasePassword() + "&useSSL=false";
+//            String connectionString =
+//                    GameSettings.getDefault().getJdbcConnectString() + GameSettings.getDefault().getDatabaseAddress() + "/"
+//                            + GameSettings.getDefault().getDatabaseName() + "?user="
+//                            + GameSettings.getDefault().getDatabaseUsername() + "&password="
+//                            + GameSettings.getDefault().getDatabasePassword() + "&useSSL=false";
+//
+//            connect = DriverManager.getConnection(connectionString);
 
-            connect = DriverManager.getConnection(connectionString);
+            connect = DataSourcePool.getConnection();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -278,7 +284,11 @@ public class GameWorld {
          * high chance of not being able to cast spells
          *
          */
-        getSqlConnection().createStatement().executeUpdate("UPDATE spellbook SET last_casted=0");
+
+        try(Statement statement = DataSourcePool.getConnection().createStatement()){
+            statement.executeUpdate("UPDATE spellbook SET last_casted=0");
+        }
+
         Logger.INSTANCE.print("Loading Guilds: ");
         try {
             this.getGuildHandler().loadGuilds(this);
@@ -435,16 +445,17 @@ public class GameWorld {
             }
         }
         Logger.INSTANCE.println("Saving items.");
-        ExecutorService es = Executors.newCachedThreadPool();
-        es.execute(this.getItemHandler().save(this)); //TODO - Verify if this is needed or not. Looks like players handles saving of items anyways. What is this for? Check goose code to see if this is being ran
-        Logger.INSTANCE.println("Saving players.");
-        for (Goose.Player player : this.getPlayerHandler().getPlayers()) {
-            if (player.getState().compareTo(Goose.Player.States.LoadingGame) > 0) {
-                es.execute(player.saveToDatabase(this));
+        try(ExecutorService es = Executors.newVirtualThreadPerTaskExecutor()) {
+            es.execute(this.getItemHandler().save(this)); //TODO - Verify if this is needed or not. Looks like players handles saving of items anyways. What is this for? Check goose code to see if this is being ran
+            Logger.INSTANCE.println("Saving players.");
+            for (Goose.Player player : this.getPlayerHandler().getPlayers()) {
+                if (player.getState().compareTo(Goose.Player.States.LoadingGame) > 0) {
+                    es.execute(player.saveToDatabase(this));
+                }
             }
+            es.shutdown();
+            es.awaitTermination(5, TimeUnit.MINUTES);
         }
-        es.shutdown();
-        es.awaitTermination(5, TimeUnit.MINUTES);
         Logger.INSTANCE.println("Finished shutting down.");
         isSaved = true;
     }

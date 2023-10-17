@@ -428,7 +428,8 @@ public class Item implements IItem {
      * SaveItem, updates item info in database
      */
     public void saveItem(GameWorld world) throws Exception {
-        new Thread(() -> {
+        Thread.ofVirtual().start(() -> {
+//        new Thread(() -> {
             String query =
                     "UPDATE items SET " + "item_template_id=" + this.getTemplateID() + ", " + "item_name="
                             + "?" + ", " + "item_description=" + "?" + ", " + "player_hp="
@@ -451,7 +452,7 @@ public class Item implements IItem {
                             + (this.bound ? "'1'" : "'0'") + ", " + "body_state=" + this.getBodyState()
                             + " WHERE item_id=" + this.getItemID();
 
-            try (PreparedStatement preparedStatement = world.getSqlConnection().prepareStatement(query)){ // TODO - NEED TO VERIFY THIS, I added a try with resources. I assume this is fine.
+            try (PreparedStatement preparedStatement = world.getSqlConnection().prepareStatement(query)) { // TODO - NEED TO VERIFY THIS, I added a try with resources. I assume this is fine.
                 preparedStatement.setString(1, this.getName());
                 preparedStatement.setString(2, this.getDescription());
                 preparedStatement.executeUpdate();
@@ -460,7 +461,8 @@ public class Item implements IItem {
             } catch (SQLException e) {
                 Logger.INSTANCE.println(e);
             }
-        }).start();
+        });
+//        }).start();
     }
 
     /**

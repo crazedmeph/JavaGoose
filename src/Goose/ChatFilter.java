@@ -1,23 +1,27 @@
 package Goose;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.HashMap;
 
 public class ChatFilter {
     HashMap<String, String> WordFilter;
 
-    public ChatFilter() throws Exception {
-        this.WordFilter = new HashMap<String, String>();
+    public ChatFilter() {
+        this.WordFilter = new HashMap<>();
     }
 
     public void loadFilter(GameWorld world) throws Exception {
-        ResultSet resultSet =
-                world.getSqlConnection().createStatement()
-                        .executeQuery("SELECT word,filtered FROM wordfilter");
-        while (resultSet.next()) {
-            WordFilter.put(resultSet.getString("word"), resultSet.getString("filtered"));
+        ResultSet resultSet = null;
+        try(Connection conn = world.getSqlConnection()){
+            resultSet = conn.createStatement().executeQuery("SELECT word,filtered FROM wordfilter");
+            while (resultSet.next()) {
+                WordFilter.put(resultSet.getString("word"), resultSet.getString("filtered"));
+            }
+        }finally {
+            if(resultSet != null)
+                resultSet.close();
         }
-        resultSet.close();
     }
 
     public String filter(String input) throws Exception {

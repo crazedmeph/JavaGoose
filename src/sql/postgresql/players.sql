@@ -4,7 +4,7 @@ CREATE TABLE players (
   player_name VARCHAR(50) NOT NULL,
   player_title VARCHAR(50) DEFAULT '' NOT NULL,
   player_surname VARCHAR(50) DEFAULT '' NOT NULL,
-  password_hash CHAR(32) NOT NULL,
+  password_hash character varying NOT NULL,
   password_salt VARCHAR(50) NOT NULL,
   access_status SMALLINT DEFAULT 2 NOT NULL,
   map_id SMALLINT DEFAULT 1 NOT NULL,
